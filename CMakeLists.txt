@@ -24,7 +24,7 @@ set(RNDR_SHARED_LIBS OFF)
 FetchContent_Declare(
         rndr
         GIT_REPOSITORY https://github.com/praetorian555/rndr
-        GIT_TAG        master
+        GIT_TAG master
 )
 FetchContent_MakeAvailable(rndr)
 
@@ -65,82 +65,6 @@ add_library(imgui
         ${IMGUI_OPENGL_SOURCE_FILES})
 target_include_directories(imgui PUBLIC ${SOURCE_PATH})
 
-# Setup ETC2COMP ######################################################################
-FetchContent_Declare(
-        etc2comp
-        GIT_REPOSITORY https://github.com/google/etc2comp
-        GIT_TAG 39422c1aa2f4889d636db5790af1d0be6ff3a226
-)
-FetchContent_Populate(etc2comp)
-FetchContent_GetProperties(etc2comp SOURCE_DIR ETC2COMP_SOURCE_PATH)
-file(GLOB_RECURSE ETC2COMP_SOURCES CONFIGURE_DEPENDS
-        ${ETC2COMP_SOURCE_PATH}/EtcLib/Etc/*.h
-        ${ETC2COMP_SOURCE_PATH}/EtcLib/EtcCodec/*.h
-        ${ETC2COMP_SOURCE_PATH}/EtcLib/Etc/*.cpp
-        ${ETC2COMP_SOURCE_PATH}/EtcLib/EtcCodec/*.cpp)
-add_library(etc2comp ${ETC2COMP_SOURCES}
-        ${ETC2COMP_SOURCE_PATH}/EtcTool/EtcFile.h
-        ${ETC2COMP_SOURCE_PATH}/EtcTool/EtcFile.cpp
-        ${ETC2COMP_SOURCE_PATH}/EtcTool/EtcFileHeader.h
-        ${ETC2COMP_SOURCE_PATH}/EtcTool/EtcFileHeader.cpp)
-target_include_directories(etc2comp PUBLIC ${ETC2COMP_SOURCE_PATH})
-target_include_directories(etc2comp PUBLIC ${ETC2COMP_SOURCE_PATH}/EtcLib/Etc
-        ${ETC2COMP_SOURCE_PATH}/EtcLib/EtcCodec
-        ${ETC2COMP_SOURCE_PATH}/EtcTool)
-target_compile_options(etc2comp PRIVATE /W1)
-
-# Setup ASSIMP ######################################################################
-include(cmake/cpm.cmake)
-cpmaddpackage(
-        NAME
-        assimp
-        GITHUB_REPOSITORY
-        "assimp/assimp"
-        VERSION
-        5.4.2
-        OPTIONS
-        "ASSIMP_ASSAN OFF"
-        "BUILD_SHARED_LIBS OFF"
-        "ASSIMP_BUILD_ASSIMP_TOOLS OFF"
-        "ASSIMP_BUILD_TESTS OFF"
-        "ASSIMP_NO_EXPORT ON"
-        "ASSIMP_INSTALL_PDB OFF"
-        "ASSIMP_BUILD_ZLIB ON"
-        "ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF"
-        "ASSIMP_BUILD_OBJ_IMPORTER ON"
-        "ASSIMP_BUILD_FBX_IMPORTER ON"
-        "ASSIMP_BUILD_GLTF_IMPORTER ON"
-        "ASSIMP_BUILD_COLLADA_IMPORTER ON"
-)
-SET_TARGET_PROPERTIES(assimp PROPERTIES FOLDER Extern)
-SET_TARGET_PROPERTIES(zlibstatic PROPERTIES FOLDER Extern)
-SET_TARGET_PROPERTIES(UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTIES FOLDER Extern)
-
-# Setup MESHOPTIMIZER ######################################################################
-cpmaddpackage(
-        NAME
-        meshoptimizer
-        GITHUB_REPOSITORY
-        "zeux/meshoptimizer"
-        GIT_TAG
-        "v0.20"
-        OPTIONS
-        "MESHOPT_WERROR ON"
-)
-SET_TARGET_PROPERTIES(meshoptimizer PROPERTIES FOLDER Extern)
-
-# Setup GLI ###############################################################################
-FetchContent_Declare(
-        gli
-        GIT_REPOSITORY https://github.com/g-truc/gli
-        GIT_TAG 30808550a20ca53a255e6e1e77070493eda7b736 # 0.8.2
-)
-FetchContent_Populate(gli)
-FetchContent_GetProperties(gli SOURCE_DIR GLI_SOURCE_PATH)
-add_library(gli INTERFACE)
-target_include_directories(gli INTERFACE ${GLI_SOURCE_PATH})
-target_include_directories(gli INTERFACE ${GLI_SOURCE_PATH}/external/glm)
-set_target_properties(gli PROPERTIES FOLDER Extern)
 
 set(GAME_ANIMATION_FILES
         src/types.h
@@ -153,6 +77,5 @@ set(GAME_ANIMATION_FILES
         src/main.cpp)
 add_executable(game-animation ${GAME_ANIMATION_FILES})
 target_link_libraries(game-animation PRIVATE gameanim_options gameanim_warnings)
-target_link_libraries(game-animation PUBLIC rndr math opal imgui etc2comp assimp meshoptimizer gli)
 target_include_directories(game-animation PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/shared)
 target_compile_definitions(game-animation PUBLIC -DASSETS_ROOT="${CMAKE_CURRENT_SOURCE_DIR}/assets/")
