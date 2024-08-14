@@ -65,6 +65,10 @@ add_library(imgui
         ${IMGUI_OPENGL_SOURCE_FILES})
 target_include_directories(imgui PUBLIC ${SOURCE_PATH})
 
+# Setup Tiny GLTF ##################################################################
+add_library(tinygltf STATIC third-party/tiny-gltf/src/tiny_gltf.cc third-party/tiny-gltf/include/tiny-gltf/tiny_gltf.h third-party/tiny-gltf/include/tiny-gltf/json.hpp)
+target_include_directories(tinygltf PUBLIC third-party/tiny-gltf/include)
+target_link_libraries(tinygltf PUBLIC gameanim_options gameanim_warnings)
 
 set(GAME_ANIMATION_FILES
         src/types.h
@@ -77,5 +81,6 @@ set(GAME_ANIMATION_FILES
         src/main.cpp)
 add_executable(game-animation ${GAME_ANIMATION_FILES})
 target_link_libraries(game-animation PRIVATE gameanim_options gameanim_warnings)
+target_link_libraries(game-animation PUBLIC rndr math opal imgui tinygltf)
 target_include_directories(game-animation PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/shared)
 target_compile_definitions(game-animation PUBLIC -DASSETS_ROOT="${CMAKE_CURRENT_SOURCE_DIR}/assets/")
